@@ -29,13 +29,12 @@ class Incubator:
                                self.start_heating(temperature)
                         elif temperature > self.target + self.tol and self.is_heater_on:
                                 self.stop_heating(temperature)
-##                        elif temperature < self.target - 2*self.tol and :
-##                                print('Must heat')
-##                                self.start_heating(temperature)
-##                        elif temperature > self.target + 2*self.tol:
-##                                print('Must stop heating')
-##                                self.stop_heating(temperature)
-                                
+                        elif temperature < self.target - 2*self.tol:
+                               print('Must heat')
+                               self.start_heating(temperature)
+                        elif temperature > self.target + 2*self.tol:
+                               print('Must stop heating')
+                               self.stop_heating(temperature)
                         else:
                                 print("doing nothing ("+ str(temperature) + ")")
                                 time.sleep(self.measure_interval)
