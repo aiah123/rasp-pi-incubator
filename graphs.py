@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 from datetime import datetime
 import numpy as np
-import Gtk
 
 TEMP_INDEX = 0
 DATE_INDEX = 1
