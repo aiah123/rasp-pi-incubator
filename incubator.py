@@ -6,11 +6,12 @@ import thermometer as thermo
 
 
 class Incubator:
-        def __init__(self, target_temp=40, tolerance=2, measure_interval=10):
+        def __init__(self, target_temp=40, tolerance=2, measure_interval=10, way_too_high_temp=50):
                 self.on_switch = 11
                 self.off_switch = 13                
                 self.target = target_temp
                 self.tol = tolerance
+                self.way_too_high_temp = way_too_high_temp
                 self.is_heater_on = False
                 self.measure_interval = measure_interval
                 GPIO.setmode(GPIO.BOARD)
@@ -21,6 +22,9 @@ class Incubator:
                 while True:
                         temperature = thermo.get_temperature()
                         #print(temperature)
+                        if temperature > self.way_too_high_temp:
+                                raise ValueError('Waaaaay to high temperature: ' + str(self.way_too_high_temp) + '. '
+                                                                                                                 'Closing everything')
                         if temperature < self.target - self.tol and not self.is_heater_on:
                                self.start_heating(temperature)
                         elif temperature > self.target + self.tol and self.is_heater_on:
@@ -57,6 +61,8 @@ def main():
                 print(exc_type, fname, exc_tb.tb_lineno)
                 print(e)
         finally:
+                temperature = thermo.get_temperature()
+                incubator.stop_heating(temperature)
                 switch_send_signal(incubator.off_switch, 1)
                 GPIO.cleanup()
                 print("See you next time!")
