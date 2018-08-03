@@ -51,7 +51,7 @@ class Incubator:
         switch_send_signal(self.off_switch, 1)
         self.is_heater_on = False
 
-    def log(log_str):
+    def log(self, log_str):
         with open(log_file_name, "a") as f:
             print(log_str)
             line = log_str + "\n"
