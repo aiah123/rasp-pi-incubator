@@ -6,8 +6,8 @@ TEMP_INDEX = 0
 DATE_INDEX = 1
 TIMESTAMP_FORMAT = '%Y-%m-%d %H:%M:%S.%f'
 
-start_time = '2018-08-01 00:00:01.696912'
-end_time = '2018-08-01 20:38:01.696912'
+start_time = '2018-08-02 22:00:01.696912'
+end_time = '2018-08-03 20:38:01.696912'
 
 fname = 'temp.log'
 with open(fname) as file:
@@ -26,5 +26,7 @@ temps = temps[dates_in_range]
 dates = dates[dates_in_range]
 
 plt.plot(dates, temps, '.-')
+plt.axhline(40.15)
+plt.axhline(39.85, c="r")
 plt.show()
 
