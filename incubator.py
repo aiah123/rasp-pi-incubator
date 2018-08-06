@@ -1,11 +1,12 @@
 import time
+import datetime
 import sys, os
 import RPi.GPIO as GPIO
 from .switch_control import switch_send_signal
 from .thermometer import get_temperature
 from .BoundedList import *
 
-log_file_name = 'incubator_log.log'
+log_file_name = 'src/incubator_log.log'
 MIN_LAST_SAMPLES_KEPT = 8
 
 
@@ -91,7 +92,7 @@ class Incubator:
 
     @staticmethod
     def log(log_str):
-        log_str = str(datetime.datetime.now()) + log_str
+        log_str = str(datetime.datetime.now()) + ' ' + log_str
         with open(log_file_name, "a") as f:
             print(log_str)
             line = str(log_str) + "\n"
@@ -100,7 +101,7 @@ class Incubator:
 
 def main():
     try:
-        incubator = Incubator(tolerance=0.5, target_temp=36, measure_interval=10)
+        incubator = Incubator(tolerance=0.1, target_temp=33, measure_interval=10)
         incubator.start_incubating()
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()

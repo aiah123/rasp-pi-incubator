@@ -3,7 +3,7 @@ import datetime
 
 
 
-temp_log_file_name = "temp.log"
+temp_log_file_name = "src/temp.log"
 temperature_source_file = "/sys/bus/w1/devices/28-0517a02b5dff/w1_slave"
 
 
