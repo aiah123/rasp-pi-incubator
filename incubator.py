@@ -30,6 +30,10 @@ class Incubator:
     def temperature_decreasing(self):
         return self.is_series_by_f(lambda x, y: x < y)
 
+    # f is a boolean lambda function that takes two consecutive elements in the series (e.g, larger than)
+    # The method returns true if the series does NOT apply for comply with f.
+    # E.g, the lambda  (lambda x, y: x < y)
+    # will return true if the series is monotonically decreasing.
     def is_series_by_f(self, f):
         for sample_index in range(self.last_samples_queue.size() - 1):
             curr_sample = self.last_samples_queue[sample_index]
