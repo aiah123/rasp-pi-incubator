@@ -6,8 +6,8 @@ TEMP_INDEX = 0
 DATE_INDEX = 1
 TIMESTAMP_FORMAT = '%Y-%m-%d %H:%M:%S.%f'
 
-start_time = '2018-08-02 22:00:01.696912'
-end_time = '2018-08-03 20:38:01.696912'
+start_time = '2018-08-05 22:00:01.696912'
+end_time = '2018-08-06 07:38:01.696912'
 
 fname = 'temp.log'
 with open(fname) as file:
