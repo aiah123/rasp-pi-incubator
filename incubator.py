@@ -21,7 +21,7 @@ class Incubator:
         self.measure_interval = measure_interval
 
         # the list should keep samples from the last 30 seconds (or at least 5 last samples)
-        self.last_samples_queue = BoundedSamplesSeries(max(MIN_LAST_SAMPLES_KEPT, 30.0 / self.measure_interval))
+        self.last_samples_list = BoundedSamplesSeries(max(MIN_LAST_SAMPLES_KEPT, 30.0 / self.measure_interval))
         GPIO.setmode(GPIO.BOARD)
         GPIO.setup(self.on_switch, GPIO.OUT)
         GPIO.setup(self.off_switch, GPIO.OUT)
@@ -29,7 +29,7 @@ class Incubator:
     def start_incubating(self):
         while True:
             temperature = get_temperature()
-            self.last_samples_queue.add(temperature)
+            self.last_samples_list.add(temperature)
             if temperature > self.way_too_high_temp:
                 raise ValueError('Waaaaay to high temperature: ' + str(self.way_too_high_temp) + '. '
                                                                                                  'Closing everything')
@@ -37,10 +37,10 @@ class Incubator:
                 self.start_heating(temperature)
             elif temperature > self.target + self.tol and self.is_heater_on:
                 self.stop_heating(temperature)
-            elif temperature < self.target - 2 * self.tol and self.temperature_decreasing():
+            elif temperature < self.target - 2 * self.tol and self.last_samples_list.temperature_decreasing():
                 self.log('Must heat')
                 self.start_heating(temperature)
-            elif temperature > self.target + 2 * self.tol and self.temperature_increasing():
+            elif temperature > self.target + 2 * self.tol and self.last_samples_list.temperature_increasing():
                 self.log('Must stop heating')
                 self.stop_heating(temperature)
             else:
