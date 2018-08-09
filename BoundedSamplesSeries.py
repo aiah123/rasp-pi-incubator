@@ -22,13 +22,13 @@ class BoundedSamplesSeries:
     def temperature_increasing(self):
         if not self.has_enough_samples():
             return False
-        return self.is_series_by_f(lambda x, y: x > y)
+        return self.is_series_by_f(lambda x, y: x > y) and not self.all_elements_are_equal()
 
     # returns true if the temperature is a monotonically decreasing series
     def temperature_decreasing(self):
         if not self.has_enough_samples():
             return False
-        return self.is_series_by_f(lambda x, y: x < y)
+        return self.is_series_by_f(lambda x, y: x < y) and not self.all_elements_are_equal()
 
     def has_enough_samples(self):
         if self.size() < self.max_size:
@@ -48,19 +48,37 @@ class BoundedSamplesSeries:
 
         return True
 
+    def all_elements_are_equal(self):
+        first_element = self.bounded_list[0]
+        bool_x_that_are_equal_to_first_elemnt = [((self.bounded_list[0] == x)) for x in self.bounded_list]
+        return sum(bool_x_that_are_equal_to_first_elemnt) == len(bool_x_that_are_equal_to_first_elemnt)
 
-#
-my_list = BoundedSamplesSeries(5)
-my_list.add(3)
-my_list.add(3)
-my_list.add(4)
-my_list.add(5)
-my_list.add(5)
-my_list.add(8)
-my_list.add(9)
-my_list.add(10)
-my_list.add(11)
-my_list.add(12)
-print(my_list)
-print(my_list.temperature_increasing())
-print(my_list.temperature_decreasing())
+
+
+def test():
+    my_list = BoundedSamplesSeries(5)
+    my_list.add(3)
+    my_list.add(3)
+    my_list.add(4)
+    my_list.add(5)
+    my_list.add(5)
+    my_list.add(8)
+    my_list.add(9)
+    my_list.add(10)
+    my_list.add(11)
+    my_list.add(12)
+    print(my_list)
+    print(my_list.temperature_increasing())
+    print(my_list.temperature_decreasing())
+    print(my_list.all_elements_are_equal())
+
+    print('---')
+
+    my_list = BoundedSamplesSeries(4)
+    my_list.add(1)
+    my_list.add(1)
+    my_list.add(1)
+    my_list.add(1)
+    print(my_list)
+    print(my_list.all_elements_are_equal())
+

@@ -7,11 +7,12 @@ from .thermometer import get_temperature
 from .BoundedSamplesSeries import *
 
 log_file_name = 'src/incubator_log.log'
-MIN_LAST_SAMPLES_KEPT = 8
+MIN_LAST_SAMPLES_KEPT = 4
 
 
 class Incubator:
-    def __init__(self, target_temp=36, tolerance=2., measure_interval=10, way_too_high_temp=50):
+    def __init__(self, target_temp=36, tolerance=2., measure_interval=10, way_too_high_temp=50,
+                 tolerance_multiplier=2):
         self.on_switch = 11
         self.off_switch = 13
         self.target = target_temp
@@ -19,6 +20,7 @@ class Incubator:
         self.way_too_high_temp = way_too_high_temp
         self.is_heater_on = False
         self.measure_interval = measure_interval
+        self.tolerance_multiplier = tolerance_multiplier
 
         # the list should keep samples from the last 30 seconds (or at least 5 last samples)
         self.last_samples_list = BoundedSamplesSeries(max(MIN_LAST_SAMPLES_KEPT, 30.0 / self.measure_interval))
@@ -37,15 +39,16 @@ class Incubator:
                 self.start_heating(temperature)
             elif temperature > self.target + self.tol and self.is_heater_on:
                 self.stop_heating(temperature)
-            elif temperature < self.target - 2 * self.tol and self.last_samples_list.temperature_decreasing():
+            elif temperature < self.target - self.tolerance_multiplier * self.tol and self.last_samples_list.temperature_decreasing():
                 self.log('Must heat')
                 self.start_heating(temperature)
-            elif temperature > self.target + 2 * self.tol and self.last_samples_list.temperature_increasing():
+            elif temperature > self.target + self.tolerance_multiplier * self.tol and self.last_samples_list.temperature_increasing():
                 self.log('Must stop heating')
                 self.stop_heating(temperature)
             else:
                 print("doing nothing (" + str(temperature) + ")")
-                time.sleep(self.measure_interval)
+
+            time.sleep(self.measure_interval)
 
     def start_heating(self, temperature):
         self.log("start heating (" + str(temperature) + ")")
@@ -69,7 +72,7 @@ class Incubator:
 
 def main():
     try:
-        incubator = Incubator(tolerance=0.1, target_temp=33, measure_interval=10)
+        incubator = Incubator(tolerance=0.1, target_temp=33, measure_interval=60)
         incubator.start_incubating()
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
