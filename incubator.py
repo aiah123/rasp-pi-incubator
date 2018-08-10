@@ -6,6 +6,7 @@ import RPi.GPIO as GPIO
 from .switch_control import switch_send_signal
 from .thermometer import get_temperature
 from .BoundedSamplesSeries import *
+import numpy as np
 
 log_file_name = 'src/incubator_log.log'
 MIN_LAST_SAMPLES_KEPT = 4
@@ -36,7 +37,7 @@ class Incubator:
             self.last_samples_list.add(temperature)
             if temperature > self.way_too_high_temp:
                 raise ValueError('Waaaaay to high temperature: ' + str(self.way_too_high_temp) + '. '
-                                                                                                 'Closing everything')
+                                                                                             'Closing everything')
             if temperature < self.target - self.tol and not self.is_heater_on:
                 self.start_heating(temperature)
             elif temperature > self.target + self.tol and self.is_heater_on:
@@ -47,7 +48,7 @@ class Incubator:
             elif temperature > self.target + self.tolerance_multiplier * self.tol and self.last_samples_list.temperature_increasing():
                 self.log('Must stop heating')
                 self.stop_heating(temperature)
-            else:
+            else:                
                 print("doing nothing (" + str(temperature) + ")")
 
             time.sleep(self.measure_interval)
@@ -75,7 +76,7 @@ class Incubator:
 def main(argv):
     try:
         target_temp, tolerance = get_target_temp_and_tolerance(argv)
-        incubator = Incubator(tolerance=tolerance, target_temp=target_temp, measure_interval=90)
+        incubator = Incubator(tolerance=tolerance, target_temp=target_temp, measure_interval=90)     
         incubator.start_incubating()
     except Exception as e:
         handle_exception(e)
@@ -103,10 +104,13 @@ def get_target_temp_and_tolerance(argv):
     target_temp = DEFAULT_TARGET_TEMERATURE
     opts, args = getopt.getopt(argv, "tar:tol:", ["target_temp=", "tolerance="])
     for opt, arg in opts:
-        if opt in ('-tar', 'target_temp'):
-            target_temp = arg
-        elif opt in ('tol', 'tolerance'):
-            tolerance = arg
+        print(opt, arg)
+        if opt in ('-tar', '--target_temp'):
+            target_temp = np.float(arg)
+        elif opt in ('tol', '--tolerance'):
+            tolerance = np.float(arg)
+
+    print('Using target temperature %f and tolerance %f' % (target_temp, tolerance)) 
     return target_temp, tolerance
 
 
