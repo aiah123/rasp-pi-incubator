@@ -1,3 +1,4 @@
+import getopt, sys
 import time
 import datetime
 import sys, os
@@ -8,7 +9,8 @@ from .BoundedSamplesSeries import *
 
 log_file_name = 'src/incubator_log.log'
 MIN_LAST_SAMPLES_KEPT = 4
-
+DEFAULT_TOLERANCE = 0.1
+DEFAULT_TARGET_TEMERATURE = 33
 
 class Incubator:
     def __init__(self, target_temp=36, tolerance=2., measure_interval=10, way_too_high_temp=50,
@@ -70,15 +72,13 @@ class Incubator:
             f.write(line)
 
 
-def main():
+def main(argv):
     try:
-        incubator = Incubator(tolerance=0.1, target_temp=33, measure_interval=60)
+        target_temp, tolerance = get_target_temp_and_tolerance(argv)
+        incubator = Incubator(tolerance=tolerance, target_temp=target_temp, measure_interval=90)
         incubator.start_incubating()
     except Exception as e:
-        exc_type, exc_obj, exc_tb = sys.exc_info()
-        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-        incubator.log('%s %s %d' % (exc_type, fname, exc_tb.tb_lineno))
-        incubator.log(str(e))
+        handle_exception(e)
     finally:
         temperature = get_temperature()
         incubator.stop_heating(temperature)  # just in case
@@ -86,8 +86,29 @@ def main():
         incubator.stop_heating(temperature)  # second just in case
         switch_send_signal(incubator.off_switch, 1)
         GPIO.cleanup()
+        time.sleep(1)
+        GPIO.cleanup()
         incubator.log("See you next time!")
 
 
+def handle_exception(e):
+    exc_type, exc_obj, exc_tb = sys.exc_info()
+    fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+    Incubator.log('%s %s %d' % (exc_type, fname, exc_tb.tb_lineno))
+    Incubator.log(str(e))
+
+
+def get_target_temp_and_tolerance(argv):
+    tolerance = DEFAULT_TOLERANCE
+    target_temp = DEFAULT_TARGET_TEMERATURE
+    opts, args = getopt.getopt(argv, "tar:tol:", ["target_temp=", "tolerance="])
+    for opt, arg in opts:
+        if opt in ('-tar', 'target_temp'):
+            target_temp = arg
+        elif opt in ('tol', 'tolerance'):
+            tolerance = arg
+    return target_temp, tolerance
+
+
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1:])
