@@ -1,0 +1,8 @@
+A program for an incubator using Raspberry Pi.
+The RPi has a thermometer and an IR switch. The IR switch turns on a heating source.
+
+Usage:
+python incubator.py --target_temp=<degrees celsius> --tolerance=<tolerance in celsius>
+
+The tolerance indicates when the heating source should be switched on/off. It does not ensures the temperature will stay within the tolerance bounds.
+However, in all experiments, the temperature did not deviate in more than 1C from the tolerance.
