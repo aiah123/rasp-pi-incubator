@@ -16,8 +16,8 @@ DEFAULT_TARGET_TEMERATURE = 33
 class Incubator:
     def __init__(self, target_temp=36, tolerance=2., measure_interval=10, way_too_high_temp=50,
                  tolerance_multiplier=2):
-        self.on_switch = 11
-        self.off_switch = 13
+        self.on_switch = 16
+        self.off_switch = 18
         self.target = target_temp
         self.tol = tolerance
         self.way_too_high_temp = way_too_high_temp
