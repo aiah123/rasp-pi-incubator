@@ -4,7 +4,9 @@ import datetime
 
 
 temp_log_file_name = "temp.log"
-temperature_source_file = "/sys/bus/w1/devices/28-0517a02b5dff/w1_slave"
+#TODO move to config file
+device_id = "28-0517a02b5dff"
+temperature_source_file = "/sys/bus/w1/devices/" + device_id + "/w1_slave"
 
 
 def get_temperature():

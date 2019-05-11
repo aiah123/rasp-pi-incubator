@@ -1,6 +1,22 @@
 A program for an incubator using Raspberry Pi.
 The RPi has a thermometer and an IR switch. The IR switch turns on a heating source.
 
+The code assumes there is a working temperature sensor DS18B20.
+First Use configuration:
+* make the sensors modules load on restart, update /etc/modules with these commands:
+w1_gpio
+w1_therm
+
+* In some RPi version, you will also have to add this line to /boot/config.txt:
+dtoverlay=w1-gpio,gpiopin=4
+
+* After restart, you should be able to see your device id by running:
+ls -d /sys/bus/w1/devices/28*
+
+* Insert that id in the file thermometer.py, in the line 
+device_id = <X>
+
+
 Usage:
 python -m rasp-pi-incubator.incubator --target_temp=<degrees celsius> --tolerance=<tolerance in celsius>
 
