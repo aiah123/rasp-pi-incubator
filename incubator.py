@@ -8,7 +8,7 @@ from .thermometer import get_temperature
 from .BoundedSamplesSeries import *
 import numpy as np
 
-log_file_name = 'src/incubator_log.log'
+log_file_name = 'rasp-pi-incubator/logs/incubator_log.log'
 MIN_LAST_SAMPLES_KEPT = 4
 DEFAULT_TOLERANCE = 0.1
 DEFAULT_TARGET_TEMERATURE = 33
@@ -67,7 +67,7 @@ class Incubator:
     @staticmethod
     def log(log_str):
         log_str = str(datetime.datetime.now()) + ' ' + log_str
-        with open(log_file_name, "a") as f:
+        with open(log_file_name, "aw+") as f:
             print(log_str)
             line = str(log_str) + "\n"
             f.write(line)
@@ -75,6 +75,7 @@ class Incubator:
 
 def main(argv):
     try:
+
         target_temp, tolerance = get_target_temp_and_tolerance(argv)
         incubator = Incubator(tolerance=tolerance, target_temp=target_temp, measure_interval=90)     
         incubator.start_incubating()
